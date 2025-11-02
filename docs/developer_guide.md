@@ -45,6 +45,54 @@ operator training. Custom profile files can be loaded at runtime with `--profile
 - Persist logs by redirecting stdout to files under `/mnt/data/ocr_gen/logs/`. The
   `make setup` target scaffolds this directory.
 
+## JSON Summary Schema
+The CLI returns JSON summaries for both single-file and batch executions. Downstream
+automation relies on these payloads, so treat the field layout as a stable contract and
+ensure any schema updates are reflected in this section.
+
+### Single-file summaries
+`run_ocr_job` emits one object per processed file with the following keys:
+
+- `input` – Absolute or relative path to the source PDF.
+- `output` – Destination path for the generated artifact (PDF or text sidecar).
+- `profile` – Name of the OCR profile applied to the run.
+- `returncode` – Integer exit status from the OCRmyPDF subprocess.
+- `stdout` *(optional)* – Captured stdout from OCRmyPDF when available.
+- `stderr` *(optional)* – Captured stderr from OCRmyPDF when available.
+
+### Batch summaries
+`handle_batch_command` wraps multiple single-file runs and aggregates their results into a
+single JSON document:
+
+- `profile` – Profile applied to every file in the batch.
+- `input_dir` – Source directory that was scanned for input PDFs.
+- `output_dir` – Directory receiving the processed outputs.
+- `results` – Array of single-file summary objects (see schema above).
+- `failed` – Count of single-file runs whose `returncode` was non-zero.
+- `succeeded` – Count of successful single-file runs.
+- `validation` *(optional)* – Object emitted when `--validate` is enabled; captures any
+  validator-specific details (e.g., `status`, `messages`).
+
+Example batch summary:
+
+```json
+{
+  "profile": "default",
+  "input_dir": "./samples",
+  "output_dir": "./outputs",
+  "results": [
+    {
+      "input": "./samples/doc1.pdf",
+      "output": "./outputs/doc1.pdf",
+      "profile": "default",
+      "returncode": 0
+    }
+  ],
+  "failed": 0,
+  "succeeded": 1
+}
+```
+
 ## Retry and Idempotency Practices
 - Both the `file` and `batch` handlers overwrite existing output files, making reruns
   idempotent as long as callers accept last-writer-wins behavior.
