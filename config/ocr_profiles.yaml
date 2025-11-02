@@ -1,0 +1,18 @@
+fast:
+  description: "Prioritize throughput with minimal post-processing."
+  ocrmypdf_args:
+    - "--skip-text"
+    - "--optimize=0"
+balanced:
+  description: "Balanced quality and size for general workflows."
+  ocrmypdf_args:
+    - "--skip-text"
+    - "--optimize=2"
+    - "--deskew"
+archival:
+  description: "Maximize document fidelity for long-term retention."
+  ocrmypdf_args:
+    - "--optimize=3"
+    - "--pdfa-3"
+    - "--deskew"
+    - "--clean"
