@@ -18,7 +18,7 @@ format:
 	$(RUFF) format .
 
 batch:
-	bash /mnt/data/ocr_gen/ocr_batch.sh
+	bash scripts/ocr_batch.sh
 
 single:
 	@if [ -z "$(INPUT)" ]; then \

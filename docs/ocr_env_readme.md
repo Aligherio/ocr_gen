@@ -81,7 +81,13 @@ ocrmypdf \
 Run the automation script to process all PDFs in `/in`:
 
 ```bash
-/mnt/data/ocr_gen/ocr_batch.sh
+make batch
+```
+
+Alternatively, you can execute the script directly:
+
+```bash
+bash scripts/ocr_batch.sh
 ```
 
 Each file generates:
@@ -130,4 +136,4 @@ pdfinfo "/mnt/data/ocr_gen/out/file (searchable).pdf"
 
 **Maintainer:** Jeremy Heyer  
 **Location:** DOH HVSU  
-**Last Updated:** November 2025
+**Last Updated:** November 2, 2025
