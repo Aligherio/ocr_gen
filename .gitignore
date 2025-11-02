@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+.env/
+*.venv
+
+# Environment variables and secrets
+.env
+.env.*
+*.env
+
+# Logs and runtime artifacts
+logs/
+*.log
+
+# Tooling caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.cache/
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+
+# OCR working directories (if present inside repo)
+mnt/data/ocr_gen/
+mnt/data/ocr_gen/*
+/mnt/data/ocr_gen/
+/mnt/data/ocr_gen/*
