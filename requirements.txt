@@ -1,0 +1,7 @@
+ocrmypdf[full]==16.4.5
+pikepdf==9.2.0
+pillow==10.4.0
+pdfminer.six==20240706
+pyyaml==6.0.2
+pytest==8.3.2
+ruff==0.6.9
