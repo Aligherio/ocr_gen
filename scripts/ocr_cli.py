@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
+from scripts.types import OCRBatchSummary, OCRJobSummary, ValidationSummary
+
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover - import guard
@@ -83,7 +85,7 @@ def run_ocr_job(
     output_path: Path,
     profile: OCRProfile,
     extra_args: tuple[str, ...],
-) -> dict[str, Any]:
+) -> OCRJobSummary:
     """Execute an ``ocrmypdf`` invocation and capture structured metadata."""
     command = [
         "ocrmypdf",
@@ -109,7 +111,7 @@ def run_ocr_job(
         capture_output=True,
         text=True,
     )
-    summary: dict[str, Any] = {
+    summary: OCRJobSummary = {
         "input": str(input_path),
         "output": str(output_path),
         "profile": profile.name,
@@ -184,7 +186,7 @@ def handle_batch_command(args: argparse.Namespace, profiles: dict[str, OCRProfil
         LOGGER.error("Profile resolution failed", extra={"structured_data": {"profile": args.profile}})
         raise SystemExit(str(error)) from error
     extra_args = tuple(args.ocrmypdf_arg or [])
-    summaries: list[dict[str, Any]] = []
+    summaries: list[OCRJobSummary] = []
     exit_codes: list[int] = []
     for pdf_path in iter_pdfs(input_dir):
         target_path = output_dir / pdf_path.name
@@ -194,9 +196,9 @@ def handle_batch_command(args: argparse.Namespace, profiles: dict[str, OCRProfil
         if args.validate and summary["returncode"] == 0:
             from scripts.validate_pdf import validate_pdf  # Local import to avoid circular runtime dependency
 
-            validation = validate_pdf(target_path)
+            validation: ValidationSummary = validate_pdf(target_path)
             summaries[-1]["validation"] = validation
-    batch_summary = {
+    batch_summary: OCRBatchSummary = {
         "profile": profile.name,
         "input_dir": str(input_dir),
         "output_dir": str(output_dir),

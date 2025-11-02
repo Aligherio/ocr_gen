@@ -5,7 +5,9 @@ import json
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Sequence
+
+from scripts.types import ValidationCommandResult, ValidationSummary
 
 LOGGER = logging.getLogger("validate_pdf")
 LOGGER.propagate = False
@@ -21,7 +23,7 @@ def configure_logging(verbose: bool) -> None:
     LOGGER.setLevel(logging.DEBUG if verbose else logging.INFO)
 
 
-def run_command(command: Sequence[str]) -> dict[str, Any]:
+def run_command(command: Sequence[str]) -> ValidationCommandResult:
     """Run an external command and return structured results."""
     completed = subprocess.run(command, capture_output=True, text=True, check=False)
     max_preview = 4096  # Prevent log spam by limiting collected output.
@@ -33,13 +35,13 @@ def run_command(command: Sequence[str]) -> dict[str, Any]:
     }
 
 
-def validate_pdf(pdf_path: Path) -> dict[str, Any]:
+def validate_pdf(pdf_path: Path) -> ValidationSummary:
     """Validate a PDF by calling pdfinfo and pdftotext."""
     commands = {
         "pdfinfo": ["pdfinfo", str(pdf_path)],
         "pdftotext": ["pdftotext", "-q", str(pdf_path), "-"],
     }
-    results: dict[str, Any] = {}
+    results: ValidationSummary = {}
     for name, command in commands.items():
         outcome = run_command(command)
         results[name] = outcome
