@@ -70,18 +70,27 @@ python scripts/ocr_cli.py batch --input-dir in_dir --output-dir out_dir
 ```
 
 ## Profiles and Configuration
-Profiles live in `config/ocr_profiles.yaml`. Each entry defines:
+Profiles live in `config/ocr_profiles.yaml`. The toolkit ships with three presets drawn
+from that file:
 
-```yaml
-<profile-name>:
-  description: Friendly text for help output
-  ocrmypdf_args:
-    - "--skip-text"
-    - "--optimize=2"
-```
+| Profile  | Intent                                                   | OCRmyPDF arguments                                 |
+| -------- | -------------------------------------------------------- | -------------------------------------------------- |
+| `fast`   | Prioritize throughput with minimal post-processing.      | `--skip-text`, `--optimize=0`                      |
+| `balanced` | Balanced quality and size for general workflows.         | `--skip-text`, `--optimize=2`, `--deskew`          |
+| `archival` | Maximize document fidelity for long-term retention.       | `--optimize=3`, `--pdfa-3`, `--deskew`, `--clean`  |
 
 Use `--profiles /path/to/custom.yaml` to load alternate profile sets. The CLI validates
-that every profile supplies an iterable `ocrmypdf_args` list before execution.
+that every profile supplies an iterable `ocrmypdf_args` list before execution. See the
+[Developer Guide](developer_guide.md#profile-schema) for a deeper look at the schema and
+extension guidance.
+
+> **Tip:** `scripts/ocr_batch.sh` reads the `OCR_PROFILE` environment variable before
+> invoking the CLI. Export it to switch defaults without editing YAML, for example:
+>
+> ```bash
+> export OCR_PROFILE=archival
+> make batch
+> ```
 
 ## Outputs and Logs
 - **Output PDFs**: Default to `<input>.ocr.pdf` for single-file runs or the configured
